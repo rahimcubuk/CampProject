@@ -1,10 +1,13 @@
 ﻿using Business.Abstract;
 using Business.Constants;
+using Business.ValidationRules.FluentValidation;
+using Core.CrossCuttingConcerns.Validation;
 using Core.Utilities.Results;
 using DataAccess.Abstract;
 using DataAccess.Concrete.InMemory;
 using Entities.Concrete;
 using Entities.DTOs;
+using FluentValidation;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -13,29 +16,25 @@ namespace Business.Concrete
 {
     public class ProductManager : IProductService
     {
+        #region Construction Method 
         IProductDal _productDal;
 
         public ProductManager(IProductDal productDal)
         {
             _productDal = productDal;
         }
+        #endregion
 
-        
+        #region Methods
+
         public IResult Add(Product product)
         {
-            //business codes
+            ValidationTool.Validate(new ProductValidator(), product);
 
-            if (product.ProductName.Length<2)
-            {
-                //magic strings
-                return new ErrorResult(Messages.ProductNameInvalid);
-            }
             _productDal.Add(product);
-
             return new SuccessResult(Messages.ProductAdded);
         }
 
-        
         public IDataResult<List<Product>> GetAll()
         {
             if (DateTime.Now.Hour == 1)
@@ -69,5 +68,7 @@ namespace Business.Concrete
             }
             return new SuccessDataResult<List<ProductDetailDto>>(_productDal.GetProductDetails());
         }
+
+        #endregion
     }
 }
