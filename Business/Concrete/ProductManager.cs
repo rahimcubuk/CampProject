@@ -2,6 +2,9 @@
 using Business.BusinessAspects.Autofac;
 using Business.Constants;
 using Business.ValidationRules.FluentValidation;
+using Core.Aspects.Autofac.Caching;
+using Core.Aspects.Autofac.Performance;
+using Core.Aspects.Autofac.Transaction;
 using Core.Aspects.Autofac.Validation;
 using Core.Utilities.Business;
 using Core.Utilities.Results;
@@ -47,8 +50,9 @@ namespace Business.Concrete
 
         #region Methods
 
-        [SecuredOperation("admin")]
+        [SecuredOperation("admin,product.add")]
         [ValidationAspect(typeof(ProductValidator))]
+        [CacheRemoveAspect("IProductService.Get")]
         public IResult Add(Product product)
         {
             IResult result = BusinessRules.Run(
@@ -66,18 +70,23 @@ namespace Business.Concrete
             return new SuccessResult(Messages.ProductAdded);
         }
 
+        [CacheRemoveAspect("IProductService.Get")]
         public IResult Delete(Product product)
         {
             _productDal.Delete(product);
             return new SuccessResult();
         }
 
+        [CacheRemoveAspect("IProductService.Get")]
         public IResult Update(Product product)
         {
             _productDal.Update(product);
             return new SuccessResult(Messages.ProductAdded);
         }
 
+        //[SecuredOperation("admin,user,product.list")]
+        [CacheAspect(duration: 10)]
+        [PerformanceAspect(5)] //--> bu metodun calismasi 5sn surerse uyari verir. 
         public IDataResult<List<Product>> GetAll()
         {
             if (DateTime.Now.Hour == 1)
@@ -93,6 +102,7 @@ namespace Business.Concrete
             return new SuccessDataResult<List<Product>>(_productDal.GetAll(p => p.CategoryId == id));
         }
 
+        [CacheAspect(duration: 10)]
         public IDataResult<Product> GetById(int productId)
         {
             return new SuccessDataResult<Product>(_productDal.Get(p => p.ProductId == productId));
@@ -111,7 +121,18 @@ namespace Business.Concrete
             }
             return new SuccessDataResult<List<ProductDetailDto>>(_productDal.GetProductDetails());
         }
-
+       
+        [TransactionScopeAspect]
+        public IResult AddTransactionalTest(Product product)
+        {
+            Add(product);
+            if (product.UnitPrice < 10)
+            {
+                throw new Exception("");
+            }
+            Add(product);
+            return null;
+        }
         #endregion
     }
 }

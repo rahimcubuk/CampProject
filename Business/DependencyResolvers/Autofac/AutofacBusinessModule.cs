@@ -14,6 +14,7 @@ namespace Business.DependencyResolvers.Autofac
 {
     public class AutofacBusinessModule : Module
     {
+        // Bu asamada tum yazilan DependencyResolvers sadece projeye ozel bagimliliklari cozer.
         protected override void Load(ContainerBuilder builder)
         {
             #region readme
@@ -60,8 +61,6 @@ namespace Business.DependencyResolvers.Autofac
             #region Logger
             builder.RegisterType<FileLogger>().As<ILogger>().SingleInstance();
             #endregion
-
-            //builder.RegisterType<HttpContextAccessor>().As<IHttpContextAccessor>();
 
             #region Aspect
             var assembly = System.Reflection.Assembly.GetExecutingAssembly();
