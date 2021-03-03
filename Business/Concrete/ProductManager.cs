@@ -1,13 +1,16 @@
 ﻿using Business.Abstract;
+using Business.BusinessAspects.Autofac;
 using Business.Constants;
 using Business.ValidationRules.FluentValidation;
 using Core.Aspects.Autofac.Validation;
+using Core.Utilities.Business;
 using Core.Utilities.Results;
 using DataAccess.Abstract;
 using Entities.Concrete;
 using Entities.DTOs;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Business.Concrete
 {
@@ -15,23 +18,63 @@ namespace Business.Concrete
     {
         #region Construction Method 
         IProductDal _productDal;
-
-        public ProductManager(IProductDal productDal)
+        ICategoryService _categoryService; // Bir manager a baska bir dal enjekte edilmez. Servis enjekte edilebilir.
+        public ProductManager(IProductDal productDal, ICategoryService categoryService)
         {
             _productDal = productDal;
+            _categoryService = categoryService;
+        }
+        #endregion
+
+        #region Business rules
+        private int _limit = 10;
+        private IResult CheckIfProductCountOfCategoryCorrect(int categoryId, int limit)
+        {
+            int result = GetAllByCategoryId(categoryId).Data.Count;
+            return result > limit ? new ErrorResult(Messages.ProductCountOfCategoryError) : (IResult)new SuccessResult();
+        }
+        private IResult CheckIfProductNameExists(string name)
+        {
+            var result = _productDal.GetAll(x => x.ProductName == name).Any();
+            return result ? new ErrorResult(Messages.ProductNameAlreadyExist) : (IResult)new SuccessResult();
+        }
+        private IResult CheckIfCountOfCategoryLimitExceded(int limit)
+        {
+            int result = _categoryService.GetAll().Data.Count;
+            return result > _limit ? new ErrorResult(Messages.CategoryLimitExceded) : (IResult)new SuccessResult();
         }
         #endregion
 
         #region Methods
-        /*
-         * Interceptors --> projelerde validasyon hatasi alidiginda oncesinde sonrasinda calisacak kodlarin yonetimi
-         * Attribute yontemi
-         * 
-         * */
+
+        [SecuredOperation("admin")]
         [ValidationAspect(typeof(ProductValidator))]
         public IResult Add(Product product)
         {
+            IResult result = BusinessRules.Run(
+                CheckIfProductCountOfCategoryCorrect(product.CategoryId, _limit),
+                CheckIfProductNameExists(product.ProductName),
+                CheckIfCountOfCategoryLimitExceded(_limit)
+                );
+
+            if (!(result is null))
+            {
+                return result;
+            }
+
             _productDal.Add(product);
+            return new SuccessResult(Messages.ProductAdded);
+        }
+
+        public IResult Delete(Product product)
+        {
+            _productDal.Delete(product);
+            return new SuccessResult();
+        }
+
+        public IResult Update(Product product)
+        {
+            _productDal.Update(product);
             return new SuccessResult(Messages.ProductAdded);
         }
 

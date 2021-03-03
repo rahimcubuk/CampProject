@@ -24,7 +24,6 @@ namespace WebAPI.Controllers
         // Bu yapiyi daha once Ninject ile yapmistik. 
         // Autofac, CastleWindsor, StructureMap, LightInject, DryInject --> IoC Container kutuphaneleri
         IProductService _productManager;
-
         public ProductsController(IProductService productManager)
         {
             _productManager = productManager;

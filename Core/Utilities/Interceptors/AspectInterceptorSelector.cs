@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using Castle.DynamicProxy;
 //using Core.Aspects.Autofac.Exception; //--> loglama satiri icin gerekli lib.
 //using Core.CrossCuttingConcerns.Logging.Log4Net.Loggers;
