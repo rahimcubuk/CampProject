@@ -5,13 +5,14 @@ using Entities.DTOs;
 using System.Collections.Generic;
 using System.Linq;
 using DataAccess.Concrete.EntityFramework.Contexts;
+using System.Linq.Expressions;
+using System;
 
 namespace DataAccess.Concrete.EntityFramework
 {
-    //NuGet
     public class EfProductDal : EfEntityRepositoryBase<Product, NorthwindContext>, IProductDal
     {
-        public List<ProductDetailDto> GetProductDetails()
+        public List<ProductDetailDto> GetProductDetails(Expression<Func<ProductDetailDto, bool>> filter = null)
         {
             using (NorthwindContext context = new NorthwindContext())
             {
@@ -21,11 +22,14 @@ namespace DataAccess.Concrete.EntityFramework
                              select new ProductDetailDto
                              {
                                  ProductId = p.ProductId,
+                                 CategoryId = c.CategoryId,
                                  ProductName = p.ProductName,
                                  CategoryName = c.CategoryName,
-                                 UnitsInStock = p.UnitsInStock
+                                 UnitsInStock = p.UnitsInStock,
+                                 UnitPrice = p.UnitPrice
                              };
-                return result.ToList();
+                return filter == null ? result.ToList() :
+                                        result.Where(filter).ToList();
             }
         }
     }

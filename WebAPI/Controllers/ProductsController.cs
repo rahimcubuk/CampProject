@@ -1,13 +1,6 @@
 ﻿using Business.Abstract;
-using Business.Concrete;
-using DataAccess.Concrete.EntityFramework;
 using Entities.Concrete;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace WebAPI.Controllers
 {
@@ -31,22 +24,32 @@ namespace WebAPI.Controllers
         #endregion
 
         #region Controller Methods
-        
+
         [HttpGet]
-        [Route("get")]
+        [Route("getall")]
         public IActionResult Get()
         {
-            var result = _productManager.GetAll();
-            
+            var result = _productManager.GetProductDetails();
+
             if (result.Success) return Ok(result);
             return BadRequest(result.Message);
         }
 
-        [HttpGet()]
+        [HttpGet]
         [Route("get/{id}")]
         public IActionResult Get(int id)
         {
             var result = _productManager.GetById(id);
+
+            if (result.Success) return Ok(result);
+            return BadRequest(result.Message);
+        }
+
+        [HttpGet]
+        [Route("get/category/{id}")]
+        public IActionResult GetByCategory(int id)
+        {
+            var result = _productManager.GetAllByCategory(id);
 
             if (result.Success) return Ok(result);
             return BadRequest(result.Message);

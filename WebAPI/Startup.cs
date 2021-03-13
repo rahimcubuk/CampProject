@@ -28,6 +28,8 @@ namespace WebAPI
         {
             services.AddControllers();
 
+            services.AddCors(); // vs haricinde bir kaynaktan api ye erisim icin eklenmeli
+
             var tokenOptions = Configuration.GetSection("TokenOptions").Get<TokenOptions>();
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
@@ -45,9 +47,9 @@ namespace WebAPI
                 });
 
             // injection icin farkli moduller eklersek buradan gonderip tek cati altinda toplayabiliriz
-            services.AddDependencyResolvers(new ICoreModule[] 
-            { 
-                new CoreModule()            
+            services.AddDependencyResolvers(new ICoreModule[]
+            {
+                new CoreModule()
             });
         }
 
@@ -58,6 +60,9 @@ namespace WebAPI
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            // belirtilen adresten gelen isteklerin tumunu kabul et
+            app.UseCors(builder => builder.WithOrigins("http://localhost:4200").AllowAnyHeader()); // vs haricinde bir kaynaktan api ye erisim icin eklenmeli. Sirasi onemli
 
             app.UseHttpsRedirection();
 

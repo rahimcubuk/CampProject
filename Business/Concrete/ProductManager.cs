@@ -31,11 +31,11 @@ namespace Business.Concrete
 
         #region Business rules
         private int _limit = 10;
-        private IResult CheckIfProductCountOfCategoryCorrect(int categoryId, int limit)
-        {
-            int result = GetAllByCategoryId(categoryId).Data.Count;
-            return result > limit ? new ErrorResult(Messages.ProductCountOfCategoryError) : (IResult)new SuccessResult();
-        }
+        //private IResult CheckIfProductCountOfCategoryCorrect(int categoryId, int limit)
+        //{
+        //    int result = GetAllByCategoryId(categoryId).Data.Count;
+        //    return result > limit ? new ErrorResult(Messages.ProductCountOfCategoryError) : (IResult)new SuccessResult();
+        //}
         private IResult CheckIfProductNameExists(string name)
         {
             var result = _productDal.GetAll(x => x.ProductName == name).Any();
@@ -56,7 +56,7 @@ namespace Business.Concrete
         public IResult Add(Product product)
         {
             IResult result = BusinessRules.Run(
-                CheckIfProductCountOfCategoryCorrect(product.CategoryId, _limit),
+                //CheckIfProductCountOfCategoryCorrect(product.CategoryId, _limit),
                 CheckIfProductNameExists(product.ProductName),
                 CheckIfCountOfCategoryLimitExceded(_limit)
                 );
@@ -89,17 +89,12 @@ namespace Business.Concrete
         [PerformanceAspect(5)] //--> bu metodun calismasi 5sn surerse uyari verir. 
         public IDataResult<List<Product>> GetAll()
         {
-            if (DateTime.Now.Hour == 1)
-            {
-                return new ErrorDataResult<List<Product>>(Messages.MaintenanceTime);
-            }
-
             return new SuccessDataResult<List<Product>>(_productDal.GetAll(), Messages.ProductsListed);
         }
 
-        public IDataResult<List<Product>> GetAllByCategoryId(int id)
+        public IDataResult<List<ProductDetailDto>> GetAllByCategory(int id)
         {
-            return new SuccessDataResult<List<Product>>(_productDal.GetAll(p => p.CategoryId == id));
+            return new SuccessDataResult<List<ProductDetailDto>>(_productDal.GetProductDetails(p => p.CategoryId == id));
         }
 
         [CacheAspect(duration: 10)]
@@ -115,13 +110,9 @@ namespace Business.Concrete
 
         public IDataResult<List<ProductDetailDto>> GetProductDetails()
         {
-            if (DateTime.Now.Hour == 23)
-            {
-                return new ErrorDataResult<List<ProductDetailDto>>(Messages.MaintenanceTime);
-            }
             return new SuccessDataResult<List<ProductDetailDto>>(_productDal.GetProductDetails());
         }
-       
+
         [TransactionScopeAspect]
         public IResult AddTransactionalTest(Product product)
         {

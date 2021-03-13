@@ -17,8 +17,9 @@ namespace Business.Constants
 
         public static string MaintenanceTime = "Sistem bakımda.";
 
-        public static string CategoryListed = "Kategoriler Eklendi.";
+        public static string CategoryListed = "Kategoriler Listelendi.";
         public static string CategoryLimitExceded = "Kategori Limit asimi.";
+        public static string CategoryAdded = "Kategori eklendi.";
 
         public static string AuthorizationDenied = "Yetkilendirme hatasi.";
         public static string UserNotFound = "Kullanici bulunamadi.";

@@ -11,6 +11,7 @@ namespace Core.DependencyResolvers
     {
         // Business icerinde yazilan DependencyResolvers sadece projeye ozel bagimliliklari cozer.
         // Bu asamada tum projelerde ortak olan bagimliliklari cozecegiz
+        // apide kullanilan IHttpContext, CrossCutting, stopwatch gibi
         public void Load(IServiceCollection serviceCollection)
         {
             serviceCollection.AddMemoryCache();
