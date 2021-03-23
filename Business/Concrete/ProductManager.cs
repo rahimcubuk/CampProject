@@ -50,7 +50,7 @@ namespace Business.Concrete
 
         #region Methods
 
-        [SecuredOperation("admin,product.add")]
+        //[SecuredOperation("admin,product.add")]
         [ValidationAspect(typeof(ProductValidator))]
         [CacheRemoveAspect("IProductService.Get")]
         public IResult Add(Product product)
