@@ -59,7 +59,7 @@ namespace Business.DependencyResolvers.Autofac
             #endregion
 
             #region Logger
-            builder.RegisterType<FileLogger>().As<ILogger>().SingleInstance();
+            // builder.RegisterType<FileLogger>().As<ILogger>().SingleInstance();
             #endregion
 
             #region Aspect

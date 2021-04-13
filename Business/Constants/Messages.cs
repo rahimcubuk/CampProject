@@ -1,11 +1,4 @@
-﻿using Core.Entities.Concrete;
-using Entities.Concrete;
-using System;
-using System.Collections.Generic;
-using System.Runtime.Serialization;
-using System.Text;
-
-namespace Business.Constants
+﻿namespace Business.Constants
 {
     public static class Messages
     {
@@ -26,7 +19,7 @@ namespace Business.Constants
         public static string PasswordError = "Parola hatasi.";
         public static string SuccessfulLogin = "Giris basarili.";
         public static string UserAlreadyExists = "Bu kullanici zaten kayitli.";
-        public static string AccessTokenCreated = "Access token olusturuldu.";
+        public static string AccessTokenCreated = "Basarıyla Gırıs Yapıldı";
         public static string UserRegistered = "Kullanici kaydedildi";
     }
 }
